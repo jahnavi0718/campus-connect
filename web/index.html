@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CampusConnect</title>
+<style>
+  :root { --p1:#7c3aed; --p2:#ec4899; --p3:#f59e0b; --bg:#faf5ff; --ink:#1f1535; --muted:#7a6f91; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { font-size: 17px; }
+  body { margin:0; font-size: 1rem; font-family: "Segoe UI", system-ui, sans-serif; background: var(--bg); color: var(--ink); }
+  header { position: sticky; top: 0; z-index: 10; color: #fff; padding: 10px 20px;
+           background: linear-gradient(90deg, var(--p1), var(--p2), var(--p3));
+           display: flex; align-items: center; gap: 14px; flex-wrap: wrap; box-shadow: 0 2px 10px #0003; }
+  header h1 { margin: 0; font-size: 26px; }
+  header { padding: 14px 32px; }
+  nav { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+  nav button { background: #ffffff30; color: #fff; border: 0; padding: 10px 18px; border-radius: 22px;
+               cursor: pointer; font-size: 16px; }
+  nav button.active, nav button:hover { background: #fff; color: var(--p1); font-weight: 600; }
+  select { padding: 8px 12px; border-radius: 10px; border: 0; font-size: 16px; }
+  main { max-width: 1180px; margin: 24px auto; padding: 0 24px 60px; }
+  main.profile, main.skills { max-width: 860px; }
+  .home { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 24px; align-items: start; }
+  .side { position: sticky; top: 90px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: start; }
+  .grid3 .card { margin-bottom: 0; }
+  @media (max-width: 1000px) { .grid3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 900px) { .home { grid-template-columns: 1fr; } .side { position: static; } }
+  @media (max-width: 650px) { .grid3 { grid-template-columns: 1fr; } }
+  .pill { font-size: 14px; font-weight: 700; padding: 3px 11px; border-radius: 12px; }
+  .pill.hi { background: #d1fae5; color: #047857; }
+  .pill.lo { background: #fef3c7; color: #b45309; }
+  .chip.share { background: #fce7f3; color: #be185d; }
+  .btn.ghost { background: #fff; color: var(--ink); border: 1px solid #e5e7eb; font-weight: 500; }
+  .poster { position: relative; overflow: hidden; height: 150px; border-radius: 12px; color: #fff; padding: 0 20px;
+            display: flex; flex-direction: column; justify-content: center; }
+  .poster::after { content: ''; position: absolute; top: -22px; right: -22px; width: 96px; height: 96px; border-radius: 50%; background: #ffffff40; }
+  .poster b { font-size: 21px; } .poster span { font-size: 14px; margin-top: 8px; }
+  .mrow { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-top: 1px solid #f1eefb; }
+  .mrow:first-child { border-top: 0; }
+  .card { background: #fff; border-radius: 18px; padding: 22px; margin-bottom: 14px; box-shadow: 0 3px 12px #7c3aed18; }
+  .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .grow { flex: 1; }
+  .avatar { width: 52px; height: 52px; font-size: 20px; border-radius: 50%; color: #fff; display: flex; align-items: center;
+            justify-content: center; font-weight: 700; flex-shrink: 0; }
+  .avatar.big { width: 90px; height: 90px; font-size: 36px; }
+  .name { font-size: 1.1rem; font-weight: 600; cursor: pointer; color: var(--p1); }
+  .muted { color: var(--muted); font-size: 15px; }
+  .badge { font-size: 14px; padding: 3px 9px; border-radius: 12px; margin-left: auto; }
+  .badge.doubt { background: #fef3c7; color: #b45309; }
+  .badge.ok { background: #d1fae5; color: #047857; }
+  .chip { display: inline-block; background: #ede9fe; color: var(--p1); padding: 3px 11px; border-radius: 14px;
+          margin: 3px 4px 3px 0; font-size: 15px; }
+  .chip.club { background: #d1fae5; color: #047857; }
+  .actions { display: flex; gap: 8px; margin-top: 8px; }
+  .actions button, .mini { background: #f3e8ff; border: 0; border-radius: 14px; padding: 8px 16px; cursor: pointer; font-size: 16px; }
+  .mini { padding: 3px 11px; font-size: 14px; margin-left: 6px; }
+  .btn { background: linear-gradient(90deg, var(--p1), var(--p2)); color: #fff; border: 0; padding: 11px 22px;
+         border-radius: 22px; cursor: pointer; font-weight: 600; font-size: 16px; }
+  .btn.alt { background: #fff; color: var(--p1); border: 2px solid var(--p1); }
+  textarea, input[type=text], input:not([type]) { width: 100%; padding: 10px; border: 2px solid #e9d5ff; border-radius: 12px;
+         font: inherit; font-size: 16px; }
+  img.pic { width: 100%; max-height: 420px; object-fit: cover; border-radius: 12px; margin-top: 8px; }
+  .cm { padding: 8px 0; border-top: 1px solid #f3e8ff; font-size: 16px; }
+  .bar { height: 10px; background: #ede9fe; border-radius: 6px; overflow: hidden; margin: 6px 0; }
+  .bar span { display: block; height: 100%; background: linear-gradient(90deg, var(--p1), var(--p2)); }
+  .path { font-weight: 600; color: var(--p2); }
+  h2 { margin: 6px 0 16px; font-size: 1.6rem; }
+  .stats { display: flex; gap: 22px; margin: 10px 0; }
+  .stats b { font-size: 24px; display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>&#127891; CampusConnect</h1>
+  <nav id="nav">
+    <button data-v="home">&#127968; Home</button>
+    <button data-v="suggest">&#10024; People you may know</button>
+    <button data-v="events">&#128197; Events</button>
+    <button data-v="skills">&#128269; Skills</button>
+    <button data-v="profile">&#128100; My profile</button>
+  </nav>
+  <label>Logged in as <select id="who"></select></label>
+</header>
+
+<main id="app"></main>
+
+<script>
+// ---------------------------------------------------------------
+// State: who is logged in, which page is open
+// ---------------------------------------------------------------
+let me = 1, view = 'home', profileId = 1;
+let users = [];
+const postsById = {};
+const app = document.getElementById('app');
+const COLORS = ['#7c3aed', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444'];
+
+// ---------------------------------------------------------------
+// Talk to Server.java.  Every call adds ?me=<logged in user>
+// ---------------------------------------------------------------
+async function api(path, params = {}) {
+  const qs = new URLSearchParams(Object.assign({ me: me }, params)).toString();
+  const r = await fetch('/api/' + path + '?' + qs);
+  return r.json();
+}
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function avatar(id, name, big) {
+  return '<div class="avatar' + (big ? ' big' : '') + '" style="background:' + COLORS[id % COLORS.length] + '">'
+    + esc((name || '?')[0]) + '</div>';
+}
+
+// ---------------------------------------------------------------
+// Navigation
+// ---------------------------------------------------------------
+function go(v, id) {
+  view = v;
+  if (v === 'profile') profileId = id || me;
+  render();
+  window.scrollTo(0, 0);
+}
+async function render() {
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('active', b.dataset.v === view));
+  app.className = view;
+  if (view === 'home') await home();
+  else if (view === 'suggest') await suggest();
+  else if (view === 'events') await events();
+  else if (view === 'skills') await skills();
+  else if (view === 'profile') await profile();
+}
+
+// ---------------------------------------------------------------
+// HOME: write a post + feed
+// ---------------------------------------------------------------
+function postHTML(p) {
+  postsById[p.post_id] = p;
+  const mine = p.user_id === me;
+  return '<div class="card" id="post' + p.post_id + '">'
+    + '<div class="row">' + avatar(p.user_id, p.name)
+    + '<div><span class="name" onclick="go(\'profile\',' + p.user_id + ')">' + esc(p.name) + '</span>'
+    + '<div class="muted">' + esc(p.created_at) + '</div></div>'
+    + (p.is_doubt ? '<span class="badge ' + (p.is_solved ? 'ok' : 'doubt') + '">'
+        + (p.is_solved ? '&#9989; Solved' : '&#10067; Doubt') + '</span>' : '')
+    + '</div>'
+    + '<p>' + esc(p.content) + '</p>'
+    + (p.image_path ? '<img class="pic" src="' + esc(p.image_path) + '">' : '')
+    + '<div class="actions">'
+    + '<button onclick="like(' + p.post_id + ')">' + (p.liked ? '&#10084;&#65039;' : '&#129293;') + ' ' + p.likes + '</button>'
+    + '<button onclick="toggleComments(' + p.post_id + ')">&#128172; ' + p.comments + '</button>'
+    + (mine ? '<button onclick="delPost(' + p.post_id + ')">&#128465;&#65039; Delete</button>' : '')
+    + '</div><div id="c' + p.post_id + '" hidden></div></div>';
+}
+
+async function home() {
+  const feed = await api('feed');
+  const sg = await api('suggestions');
+  const side = '<aside class="side"><div class="card"><b>&#10024; People you may know</b>'
+    + (sg.length ? sg.slice(0, 3).map(x =>
+        '<div class="row" style="margin-top:14px">' + avatar(x.user_id, x.name)
+        + '<div class="grow"><span class="name" onclick="go(\'profile\',' + x.user_id + ')">' + esc(x.name) + '</span>'
+        + '<div class="muted">' + x.mutual_count + ' mutual friend' + (x.mutual_count == 1 ? '' : 's') + '</div></div>'
+        + '<button class="btn" style="padding:8px 16px" onclick="follow(' + x.user_id + ')">Follow</button></div>').join('')
+      : '<p class="muted">No suggestions yet.</p>')
+    + '<div style="margin-top:16px"><button class="btn ghost" onclick="go(\'suggest\')">See all suggestions &rarr;</button></div>'
+    + '</div></aside>';
+  app.innerHTML = '<div class="home"><div class="feedcol">' +
+    '<div class="card"><textarea id="np" rows="3" placeholder="Share something with your campus..."></textarea>'
+    + '<div class="row" style="margin-top:8px"><label><input type="checkbox" id="nd"> I have a doubt</label>'
+    + '<span class="grow"></span><button class="btn" onclick="newPost()">Post</button></div></div>'
+    + (feed.length ? feed.map(postHTML).join('') : '<p class="muted">No posts yet.</p>')
+    + '</div>' + side + '</div>';
+}
+async function newPost() {
+  const t = document.getElementById('np').value.trim();
+  if (!t) return;
+  await api('post', { content: t, doubt: document.getElementById('nd').checked ? 1 : 0 });
+  render();
+}
+async function like(pid) { await api('like', { post: pid }); render(); }
+async function delPost(pid) {
+  if (!confirm('Delete this post?')) return;
+  const r = await api('delete-post', { post: pid });
+  if (!r.ok) alert('You can delete only your own posts.');
+  render();
+}
+
+// ---------- comments ----------
+async function toggleComments(pid) {
+  const box = document.getElementById('c' + pid);
+  if (!box.hidden) { box.hidden = true; return; }
+  await loadComments(pid);
+  box.hidden = false;
+}
+async function loadComments(pid) {
+  const box = document.getElementById('c' + pid);
+  const p = postsById[pid];
+  const cs = await api('comments', { post: pid });
+  box.innerHTML = cs.map(c =>
+    '<div class="cm"><span class="name" onclick="go(\'profile\',' + c.user_id + ')">' + esc(c.name) + '</span> '
+    + esc(c.text)
+    + (c.is_helpful ? ' <span class="badge ok">&#11088; Helpful</span>' : '')
+    + ((p.is_doubt && p.user_id === me && !c.is_helpful && c.user_id !== me)
+        ? '<button class="mini" onclick="helpful(' + c.comment_id + ',' + pid + ')">Mark helpful</button>' : '')
+    + (c.user_id === me ? '<button class="mini" onclick="delComment(' + c.comment_id + ',' + pid + ')">delete</button>' : '')
+    + '</div>').join('')
+    + '<div class="row" style="margin-top:8px"><input id="ci' + pid + '" placeholder="Write a comment..." class="grow">'
+    + '<button class="btn" onclick="addComment(' + pid + ')">Send</button></div>';
+}
+async function reopen(pid) { await render(); await toggleComments(pid); }
+async function addComment(pid) {
+  const t = document.getElementById('ci' + pid).value.trim();
+  if (!t) return;
+  await api('comment', { post: pid, text: t });
+  reopen(pid);
+}
+async function delComment(cid, pid) { await api('delete-comment', { comment: cid }); reopen(pid); }
+async function helpful(cid, pid) { await api('helpful', { comment: cid }); reopen(pid); }
+
+// ---------------------------------------------------------------
+// PEOPLE YOU MAY KNOW (scores come from similarity.py)
+// ---------------------------------------------------------------
+function ord(y) { return y + (y == 1 ? 'st' : y == 2 ? 'nd' : y == 3 ? 'rd' : 'th') + ' year'; }
+async function suggest() {
+  const [s, mentors, mine] = await Promise.all([api('suggestions'), api('mentors'), api('profile', { id: me })]);
+  const profs = await Promise.all(s.map(x => api('profile', { id: x.user_id })));
+  const mySk = new Set(mine.skills.map(k => k.skill)), myCl = new Set(mine.clubs.map(k => k.club));
+  const cards = s.map((x, i) => {
+    const pr = profs[i];
+    const chips = pr.skills.map(k => '<span class="chip' + (mySk.has(k.skill) ? ' share' : '') + '">' + esc(k.skill) + '</span>').join('')
+      + pr.clubs.map(k => '<span class="chip ' + (myCl.has(k.club) ? 'share' : 'club') + '">' + esc(k.club) + '</span>').join('');
+    const sc = Math.round(x.similarity_score);
+    return '<div class="card"><div class="row">' + avatar(x.user_id, x.name)
+      + '<div class="grow"><span class="name" onclick="go(\'profile\',' + x.user_id + ')">' + esc(x.name) + '</span>'
+      + '<div class="muted">' + esc(x.department) + ', ' + ord(x.year) + '</div></div>'
+      + '<span class="pill ' + (sc >= 50 ? 'hi' : 'lo') + '">' + sc + '%</span></div>'
+      + '<div class="muted" style="margin:10px 0 6px">' + esc(pr.user[0] ? pr.user[0].bio : '') + '</div>'
+      + '<div>' + chips + '</div>'
+      + '<div class="bar"><span style="width:' + Math.min(100, sc) + '%"></span></div>'
+      + '<div class="muted">' + x.mutual_count + ' mutual: ' + esc(x.mutual_names || 'none') + '</div>'
+      + '<div class="row" style="margin-top:12px">'
+      + '<button class="btn ghost" onclick="go(\'profile\',' + x.user_id + ')">View profile</button>'
+      + '<button class="btn" onclick="follow(' + x.user_id + ')">Follow</button></div></div>';
+  }).join('');
+  const ment = mentors.map(m =>
+    '<div class="mrow">' + avatar(m.user_id, m.name)
+    + '<div class="grow"><span class="name" onclick="go(\'profile\',' + m.user_id + ')">' + esc(m.name) + '</span>'
+    + '<div class="muted">' + esc(m.department) + ', ' + ord(m.year) + '</div>'
+    + '<div style="margin-top:6px"><span class="muted">shares: </span>'
+    + String(m.shared_skills || '').split(', ').filter(Boolean).map(k => '<span class="chip share">' + esc(k) + '</span>').join('')
+    + '</div></div>'
+    + '<button class="btn" onclick="follow(' + m.user_id + ')">Follow</button></div>').join('');
+  app.innerHTML = '<h2>People you may know</h2>'
+    + '<p class="muted" style="margin:-8px 0 16px">Found by BFS: people your friends follow (level 2). Score = 50% mutual friends + 30% common skills + 20% common clubs. Pink tags are things you share.</p>'
+    + (s.length ? '<div class="grid3">' + cards + '</div>' : '<p class="muted">No suggestions yet. Follow a few people first.</p>')
+    + (mentors.length ? '<h3 style="margin:26px 0 10px">Suggested mentors (4th year seniors with your skills)</h3><div class="card">' + ment + '</div>' : '');
+}
+async function follow(id) { await api('follow', { target: id }); render(); }
+
+// ---------------------------------------------------------------
+// PROFILE: bio, skills, clubs, connection path, posts
+// ---------------------------------------------------------------
+async function profile() {
+  const d = await api('profile', { id: profileId });
+  const u = d.user[0];
+  const own = u.user_id === me;
+  app.innerHTML =
+    '<div class="card"><div class="row">' + avatar(u.user_id, u.name, true)
+    + '<div class="grow"><h2 style="margin:0">' + esc(u.name) + '</h2>'
+    + '<div class="muted">' + esc(u.department) + ' &middot; Year ' + u.year + '</div>'
+    + (d.helpful > 0 ? '<span class="badge ok" style="margin:6px 0 0">&#11088; Helper &times; ' + d.helpful + '</span>' : '')
+    + '</div>'
+    + (own ? '' : '<button class="btn' + (d.isFollowing ? ' alt' : '') + '" onclick="follow(' + u.user_id + ')">'
+        + (d.isFollowing ? 'Unfollow' : 'Follow') + '</button>')
+    + '</div>'
+    + '<div class="stats"><div><b>' + d.followers + '</b><span class="muted">followers</span></div>'
+    + '<div><b>' + d.following + '</b><span class="muted">following</span></div></div>'
+    + (own
+        ? '<textarea id="bio" rows="2">' + esc(u.bio) + '</textarea>'
+          + '<button class="btn" style="margin-top:8px" onclick="saveBio()">Save bio</button>'
+        : '<p>' + esc(u.bio) + '</p>')
+    + '<div>' + d.skills.map(s => '<span class="chip">' + esc(s.skill) + '</span>').join('')
+    + d.clubs.map(c => '<span class="chip club">' + esc(c.club) + '</span>').join('') + '</div>'
+    + (own ? '' :
+        '<p class="muted">Mutual friends: ' + (d.mutual.length ? d.mutual.map(m => esc(m.name)).join(', ') : 'none') + '</p>'
+        + '<p>Connection path: <span class="path">'
+        + (d.path.length ? d.path.map(esc).join(' &rarr; ') : 'no connection yet') + '</span></p>')
+    + '</div><h2>Posts</h2>'
+    + (d.posts.length ? d.posts.map(postHTML).join('') : '<p class="muted">No posts yet.</p>');
+}
+async function saveBio() {
+  await api('bio', { bio: document.getElementById('bio').value });
+  alert('Bio saved!');
+}
+
+// ---------------------------------------------------------------
+// EVENTS board with RSVP
+// ---------------------------------------------------------------
+const POSTER = ['#4f46e5', '#db2777', '#0a7a52', '#a16207', '#0e7490', '#b91c1c'];
+async function events() {
+  const [ev0, mine] = await Promise.all([api('events'), api('profile', { id: me })]);
+  const myCl = new Set(mine.clubs.map(k => k.club));
+  const ev = ev0.slice().sort((a, b) => (myCl.has(b.club) ? 1 : 0) - (myCl.has(a.club) ? 1 : 0));
+  const dflt = mine.clubs.length ? mine.clubs[0].club : 'Coding Club';
+  app.innerHTML = '<h2>Campus Events</h2>'
+    + '<p class="muted" style="margin:-8px 0 16px">Events from your clubs come first.</p>'
+    + '<div class="card" style="margin-bottom:18px"><b>Create an event</b>'
+    + '<div class="row" style="margin-top:10px"><input id="et" placeholder="Event title" class="grow" style="flex:2">'
+    + '<input id="ec" value="' + esc(dflt) + '" class="grow"><input id="ew" placeholder="Day, time, place" class="grow" style="flex:2">'
+    + '<button class="btn" onclick="addEvent()">Create</button></div></div>'
+    + '<div class="grid3">' + ev.map(e =>
+      '<div class="card"><div class="poster" style="background:' + POSTER[e.event_id % POSTER.length] + '"><b>' + esc(e.title) + '</b><span>' + esc(e.when_where) + '</span></div>'
+      + '<div style="margin:12px 0 4px"><span class="chip club">' + esc(e.club) + '</span>'
+      + (myCl.has(e.club) ? '<span class="chip share">Your club</span>' : '') + '</div>'
+      + '<div style="font-weight:700;font-size:1.05rem">' + esc(e.title) + '</div>'
+      + '<div class="muted">' + esc(e.when_where) + ' &middot; by <b>' + esc(e.organizer) + '</b></div>'
+      + '<div class="row" style="margin-top:12px"><div class="grow muted"><b>' + e.going + '</b> going'
+      + (e.going_names ? ': ' + esc(e.going_names) : '') + '</div>'
+      + '<button class="btn' + (e.mine ? ' alt' : '') + '" onclick="rsvp(' + e.event_id + ')">'
+      + (e.mine ? '&#10003; Going' : "I'm going") + '</button></div></div>').join('') + '</div>';
+}
+async function rsvp(id) { await api('rsvp', { event: id }); render(); }
+async function addEvent() {
+  const t = document.getElementById('et').value.trim();
+  if (!t) return;
+  await api('event', { title: t, club: document.getElementById('ec').value, when: document.getElementById('ew').value });
+  render();
+}
+
+// ---------------------------------------------------------------
+// SKILLS: teammate finder + mentor suggestions
+// ---------------------------------------------------------------
+function personRow(x, extra) {
+  return '<div class="card"><div class="row">' + avatar(x.user_id, x.name)
+    + '<div class="grow"><span class="name" onclick="go(\'profile\',' + x.user_id + ')">' + esc(x.name) + '</span>'
+    + '<div class="muted">' + esc(x.department) + ' &middot; Year ' + x.year + '</div>'
+    + '<div>' + extra + '</div></div></div></div>';
+}
+async function skills() {
+  const m = await api('mentors');
+  app.innerHTML = '<h2>&#128269; Find teammates by skill</h2>'
+    + '<div class="card row"><input id="sk" placeholder="e.g. Java, Python, Design" class="grow">'
+    + '<button class="btn" onclick="doSearch()">Search</button></div><div id="results"></div>'
+    + '<h2>&#127891; Mentors for you</h2><p class="muted">Seniors who share your skills.</p>'
+    + (m.length ? m.map(x => personRow(x, (x.shared_skills || '').split(', ')
+        .map(s => '<span class="chip">' + esc(s) + '</span>').join(''))).join('')
+      : '<p class="muted">No mentors found.</p>');
+}
+async function doSearch() {
+  const r = await api('search', { skill: document.getElementById('sk').value });
+  document.getElementById('results').innerHTML = r.length
+    ? r.map(x => personRow(x, (x.skills || '').split(', ').map(s => '<span class="chip">' + esc(s) + '</span>').join(''))).join('')
+    : '<p class="muted">Nobody found.</p>';
+}
+
+// ---------------------------------------------------------------
+// Start
+// ---------------------------------------------------------------
+(async function init() {
+  users = await api('users');
+  const sel = document.getElementById('who');
+  sel.innerHTML = users.map(u => '<option value="' + u.user_id + '">' + esc(u.name) + '</option>').join('');
+  me = Number(localStorage.getItem('me')) || users[0].user_id;
+  sel.value = me;
+  sel.onchange = () => { me = Number(sel.value); localStorage.setItem('me', me); go('home'); };
+  document.querySelectorAll('#nav button').forEach(b =>
+    b.onclick = () => go(b.dataset.v, b.dataset.v === 'profile' ? me : undefined));
+  render();
+})();
+</script>
+</body>
+</html>
